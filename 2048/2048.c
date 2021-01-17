@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "2048.h"
+#include <time.h>
 
-//TODO: make rand() random each time
-//      set up actual gameplay
+//TODO: set up actual gameplay
 //      set up choice-making algorithm
 
 void create_board(board_wrap* board, int size){
@@ -18,7 +18,7 @@ void create_board(board_wrap* board, int size){
         }
     }
     
-    int x1 = rand()%8;
+    /*int x1 = rand()%8;
     int y1 = rand()%8;
     int x2 = rand()%8;
     int y2 = rand()%8;
@@ -33,26 +33,41 @@ void create_board(board_wrap* board, int size){
     }
 
     board->board[x1][y1] = 1;
-    board->board[x2][y2] = 1;
+    board->board[x2][y2] = 1;*/
+
+    add_random(board);
+    add_random(board);
 }
 
 void add_random(board_wrap* board){
     int x = rand() % board->size;
     int y = rand() % board->size;
+    int prob = rand() % 10;
+    int add;
     int placed = 0;
 
+    if(prob==0){
+        add = 2;
+    }
+    else{
+        add = 1;
+    }
+
     if(board->board[x][y]==0){
-        board->board[x][y] = 1;
+        board->board[x][y] = add;
         placed = 1;
     }
     else{
         for(x=x; x<board->size; x++){
             for(y=y; y<board->size; y++){
                 if(board->board[x][y]==0){
-                    board->board[x][y] = 1;
+                    board->board[x][y] = add;
                     placed = 1;
                     break;
                 }
+            }
+            if(placed==1){
+                break;
             }
         }
     }
@@ -60,7 +75,7 @@ void add_random(board_wrap* board){
         for(x=0; x<board->size; x++){
             for(y=0; y<board->size; y++){
                 if(board->board[x][y]==0){
-                    board->board[x][y] = 1;
+                    board->board[x][y] = add;
                     break;
                 }
             }
@@ -170,17 +185,18 @@ void print_board(board_wrap* board){
 }
 
 int main(char* argv, int argc){
+    srand(time(NULL));
     board_wrap board;
     create_board(&board, 8);
     print_board(&board);
-    push_up(&board);
+    /*push_up(&board);
     print_board(&board);
     push_down(&board);
     print_board(&board);
     push_left(&board);
     print_board(&board);
     push_right(&board);
-    print_board(&board);
+    print_board(&board);*/
     add_random(&board);
     print_board(&board);
     return 0;
