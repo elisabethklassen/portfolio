@@ -172,6 +172,107 @@ void push_right(board_wrap* board){
     }
 }
 
+int tally(board_wrap* to_tally){
+    int count = 0;
+    int i, j;
+    for(i=0; i<to_tally->size; i++){
+        for(j=0; j<to_tally->size; j++){
+            count += to_tally->board[i][j] * to_tally->board[i][j];
+        }
+    }
+    return count;
+}
+
+char highest(int up, int down, int left, int right){
+    if(up > down){
+        if(left > right){
+            if(up > left){
+                return 'u';
+            }
+            else {
+                return 'l';
+            }
+        }
+        else{
+            if(up > right){
+                return 'u';
+            }
+            else {
+                return 'r';
+            }
+        }
+    }
+    else {
+        if(left > right){
+            if(left > down){
+                return 'l';
+            }
+            else {
+                return 'd';
+            }
+        }
+        else {
+            if(right > down){
+                return 'r';
+            }
+            else {
+                return 'd';
+            } 
+        }
+    }
+}
+
+char direction(board_wrap* board, board_wrap* copy){
+    int up, down, left, right;
+
+    copy_board(board, copy);
+    push_up(copy);
+    up = tally(copy);
+
+    copy_board(board, copy);
+    push_down(copy);
+    down = tally(copy);
+    
+    copy_board(board, copy);
+    push_left(copy);
+    left = tally(copy);
+    
+    copy_board(board, copy);
+    push_right(copy);
+    right = tally(copy);
+
+    return highest(up, down, left, right);
+}
+
+void move(board_wrap* board, board_wrap* copy){
+    char to_move = direction(board, copy);
+    switch(to_move) {
+        case 'u':
+            push_up(board);
+            break;
+        case 'd':
+            push_down(board);
+            break;
+        case 'l':
+            push_left(board);
+            break;
+        case 'r':
+            push_right(board);
+            break;
+    }
+}
+
+void copy_board(board_wrap* board, board_wrap* copy){
+    int i, j;
+    copy->size = board->size;
+    
+    for(i=0; i<board->size; i++){
+        for(j=0; j<board->size; j++){
+            copy->board[i][j] = board->board[i][j];
+        }
+    }
+}
+
 void print_board(board_wrap* board){
     //This function prints the board
     int i, j;
@@ -188,7 +289,11 @@ int main(char* argv, int argc){
     srand(time(NULL));
     board_wrap board;
     create_board(&board, 8);
+    board_wrap copy;
+    create_board(&copy, 8);
+    copy_board(&board, &copy);
     print_board(&board);
+    print_board(&copy);
     /*push_up(&board);
     print_board(&board);
     push_down(&board);
@@ -198,6 +303,8 @@ int main(char* argv, int argc){
     push_right(&board);
     print_board(&board);*/
     add_random(&board);
+    print_board(&board);
+    move(&board, &copy);
     print_board(&board);
     return 0;
 }
