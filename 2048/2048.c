@@ -3,8 +3,7 @@
 #include "2048.h"
 #include <time.h>
 
-//TODO: set up actual gameplay
-//      set up choice-making algorithm
+//TODO: fix move algorithm and bug fixes
 
 void create_board(board_wrap* board, int size){
     // This function initializes the board to 0 and places the initial two
@@ -18,28 +17,13 @@ void create_board(board_wrap* board, int size){
         }
     }
     
-    /*int x1 = rand()%8;
-    int y1 = rand()%8;
-    int x2 = rand()%8;
-    int y2 = rand()%8;
-
-    if (x1==x2 && y1==y2){
-        if(x2<size-1){
-            x2 = x2 + 1;
-        }
-        else{
-            x2 = 0;
-        }
-    }
-
-    board->board[x1][y1] = 1;
-    board->board[x2][y2] = 1;*/
-
     add_random(board);
     add_random(board);
 }
 
 void add_random(board_wrap* board){
+    //adds a random number in a random unfilled spot on the board
+
     int x = rand() % board->size;
     int y = rand() % board->size;
     int prob = rand() % 10;
@@ -173,6 +157,7 @@ void push_right(board_wrap* board){
 }
 
 int tally(board_wrap* to_tally){
+    //counts the value of a board (the sum of its numbers squared)
     int count = 0;
     int i, j;
     for(i=0; i<to_tally->size; i++){
@@ -184,6 +169,7 @@ int tally(board_wrap* to_tally){
 }
 
 char highest(int up, int down, int left, int right){
+    //evaluates which direction has the highest value
     if(up > down){
         if(left > right){
             if(up > left){
@@ -223,6 +209,7 @@ char highest(int up, int down, int left, int right){
 }
 
 char direction(board_wrap* board, board_wrap* copy){
+    //evaluates which direction to push the board in
     int up, down, left, right;
 
     copy_board(board, copy);
@@ -245,6 +232,7 @@ char direction(board_wrap* board, board_wrap* copy){
 }
 
 void move(board_wrap* board, board_wrap* copy){
+    //pushes the board in the proper direction
     char to_move = direction(board, copy);
     switch(to_move) {
         case 'u':
@@ -262,7 +250,39 @@ void move(board_wrap* board, board_wrap* copy){
     }
 }
 
+int end_game(board_wrap* board, board_wrap* copy){
+    //determines if the game should be ended (ie there are no more legal moves)
+    int difference = 0;
+    
+    copy_board(board, copy);
+    push_up(copy);
+    if(!equals_board(board, copy)){
+        return 0;
+    }
+
+    copy_board(board, copy);
+    push_down(copy);
+    if(!equals_board(board, copy)){
+        return 0;
+    }
+
+    copy_board(board, copy);
+    push_left(copy);
+    if(!equals_board(board, copy)){
+        return 0;
+    }
+
+    copy_board(board, copy);
+    push_right(copy);
+    if(!equals_board(board, copy)){
+        return 0;
+    }
+
+    return 1;
+}
+
 void copy_board(board_wrap* board, board_wrap* copy){
+    //copies a board into another board_wrap object
     int i, j;
     copy->size = board->size;
     
@@ -271,6 +291,24 @@ void copy_board(board_wrap* board, board_wrap* copy){
             copy->board[i][j] = board->board[i][j];
         }
     }
+}
+
+int equals_board(board_wrap* board, board_wrap* copy){
+    //determines if two board_wrap objects are equal. Two board_wrap objects
+    //are said to be equal if they have the same board size and the same
+    //numbers in every cell of the board
+    int i, j;
+    if(board->size!=copy->size){
+        return 0;
+    }
+    for(i = 0; i<board->size; i++){
+        for(j=0; j<board->size; j++){
+            if(board->board[i][j] != copy->board[i][j]){
+                return 0;
+            }
+        }
+    }
+    return 1;
 }
 
 void print_board(board_wrap* board){
@@ -291,20 +329,16 @@ int main(char* argv, int argc){
     create_board(&board, 8);
     board_wrap copy;
     create_board(&copy, 8);
-    copy_board(&board, &copy);
-    print_board(&board);
-    print_board(&copy);
-    /*push_up(&board);
-    print_board(&board);
-    push_down(&board);
-    print_board(&board);
-    push_left(&board);
-    print_board(&board);
-    push_right(&board);
-    print_board(&board);*/
-    add_random(&board);
-    print_board(&board);
-    move(&board, &copy);
-    print_board(&board);
+
+    int i;
+    while(!end_game(&board, &copy)){
+        add_random(&board);
+        move(&board, &copy);
+
+        if(i%100000==0){
+            print_board(&board);
+        }
+        i++;
+    }
     return 0;
 }

@@ -15,5 +15,7 @@ int tally(board_wrap* to_tally);
 char highest(int up, int down, int left, int right);
 char direction(board_wrap* board, board_wrap* copy);
 void move(board_wrap* board, board_wrap* copy);
+int end_game(board_wrap* board, board_wrap* copy);
 void copy_board(board_wrap* board, board_wrap* copy);
+int equals_board(board_wrap* board, board_wrap* copy);
 void print_board(board_wrap* board);
