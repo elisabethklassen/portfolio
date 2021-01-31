@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "2048.h"
 #include <time.h>
+#include <math.h>
 
 //TODO: fix move algorithm and bug fixes
 
@@ -162,7 +163,7 @@ int tally(board_wrap* to_tally){
     int i, j;
     for(i=0; i<to_tally->size; i++){
         for(j=0; j<to_tally->size; j++){
-            count += to_tally->board[i][j] * to_tally->board[i][j];
+            count += pow(3, to_tally->board[i][j]);
         }
     }
     return count;
@@ -252,7 +253,7 @@ void move(board_wrap* board, board_wrap* copy){
 
 int end_game(board_wrap* board, board_wrap* copy){
     //determines if the game should be ended (ie there are no more legal moves)
-    int difference = 0;
+    int i, j;
     
     copy_board(board, copy);
     push_up(copy);
@@ -276,6 +277,14 @@ int end_game(board_wrap* board, board_wrap* copy){
     push_right(copy);
     if(!equals_board(board, copy)){
         return 0;
+    }
+
+    for(i=0; i<board->size; i++){
+        for(j=0; j<board->size; j++){
+            if(board->board[i][j]==0){
+                return 0;
+            }
+        }
     }
 
     return 1;
@@ -330,15 +339,20 @@ int main(char* argv, int argc){
     board_wrap copy;
     create_board(&copy, 8);
 
+    print_board(&board);
+
     int i;
     while(!end_game(&board, &copy)){
         add_random(&board);
         move(&board, &copy);
 
-        if(i%100000==0){
+        if(i%100==0){
             print_board(&board);
         }
         i++;
     }
+
+    print_board(&board);
+
     return 0;
 }
