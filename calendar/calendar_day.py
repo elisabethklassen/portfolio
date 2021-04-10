@@ -11,6 +11,17 @@ class Day(object):
         self.events.append(new_event)
         return new_event
 
+    def find_event_by_name(self, name):
+        for event in self.events:
+            if event.name == name:
+                return event
+        return None
+
+    def delete_event_by_name_if_exists(self, name):
+        event = self.find_event_by_name(name)
+        if event:
+            self.events.remove(event)
+
     def __str__(self):
         representation = ''
         for event in self.events:

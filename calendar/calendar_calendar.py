@@ -20,6 +20,10 @@ class Calendar(object):
             new_day = self.add_day(date)
             new_day.add_event(st, et, name, description)
 
+    def delete_event_by_name(self, name):
+        for day in self.days:
+            day.delete_event_by_name_if_exists(name)
+
     def __str__(self):
         representation = ''
         for day in self.days:
