@@ -17,6 +17,11 @@ class Day(object):
                 return event
         return None
 
+    def modify_event_by_name_if_exists(self, name, attribute, new_value):
+        for event in self.events:
+            if event.name == name:
+                event.modify_attribute(attribute, new_value)
+
     def delete_event_by_name_if_exists(self, name):
         event = self.find_event_by_name(name)
         if event:
@@ -25,6 +30,7 @@ class Day(object):
     def __str__(self):
         representation = ''
         for event in self.events:
+            representation += str(self.date) + '\n'
             representation += str(event)
             representation += '\n'
         return representation

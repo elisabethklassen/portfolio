@@ -20,9 +20,24 @@ class Calendar(object):
             new_day = self.add_day(date)
             new_day.add_event(st, et, name, description)
 
+    def modify_event_by_name(self, name, attribute, new_value):
+        if attribute == 'day':
+            event = None
+            for day in self.days:
+                event = day.find_event_by_name(name)
+                if event:
+                    day.delete_event_by_name_if_exists(event.name)
+            if event:
+                self.add_event(new_value, event.start_time, event.end_time, event.name, event.description)
+        for day in self.days:
+            day.modify_event_by_name_if_exists(name, attribute, new_value)
+
     def delete_event_by_name(self, name):
         for day in self.days:
             day.delete_event_by_name_if_exists(name)
+
+    def delete_day(self, day):
+        self.days.remove(day)
 
     def __str__(self):
         representation = ''
